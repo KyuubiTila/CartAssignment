@@ -1,7 +1,10 @@
 import { Link, NavLink } from 'react-router-dom';
 import Logo from '../assets/logo.png';
+import { useCart } from '../context/CartContext';
 
 export const Header = () => {
+  const { cartList } = useCart();
+
   const activeClass =
     'text-base block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white';
   const inactiveClass =
@@ -35,6 +38,9 @@ export const Header = () => {
                 </NavLink>
               </li>
             </ul>
+          </div>
+          <div className="flex items-center justify-between w-full md:flex md:w-auto md:order-1">
+            Cart: {cartList.length}
           </div>
         </div>
       </nav>
