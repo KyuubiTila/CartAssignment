@@ -1,9 +1,9 @@
 export const items = [
   {
     id: 1,
-    brand: 'Balenciaga',
+    brand: 'DDDDD',
     description: 'This is a balanciaga bag, You will love it',
-    price: 25,
+    price: 125,
     image: '../assets/images/img7.jpg',
   },
   {

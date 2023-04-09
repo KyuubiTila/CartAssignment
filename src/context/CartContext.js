@@ -50,59 +50,65 @@
 //   return context;
 // };
 
-import { useContext, useReducer } from 'react';
+import { useContext, useReducer, useEffect } from 'react';
 import { createContext } from 'react';
 import { cartReducer } from '../reducer/CartReducer';
 
 // When a user logs in, yjis is the initial value they should work with
-const initialState = {
-  cartList: [],
-  total: 0,
-};
+
+const LOCAL_STORAGE_KEY = 'assignment_cart';
+
+const storageValue = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+const initialState = storageValue
+  ? JSON.parse(storageValue)
+  : {
+      cartList: [],
+    };
 
 const CartContext = createContext(initialState);
 
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  const addToCart = (elements) => {
-    const updatedCartList = state.cartList.concat(elements);
-    updateTotal(updatedCartList);
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+  }, [state]);
 
+  useEffect(() => {
+    const storageValue = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+    const savedState = storageValue
+      ? JSON.parse(storageValue)
+      : {
+          cartList: [],
+        };
+
+    dispatch({
+      type: 'RESET_STATE',
+      payload: savedState,
+    });
+  }, []);
+
+  const addToCart = (cart) => {
     dispatch({
       type: 'ADD_TO_CART',
       payload: {
-        products: updatedCartList,
+        cart,
       },
     });
   };
 
-  const removeFromCart = (elements) => {
-    const updatedCartList = state.cartList.filter(
-      (current) => current.id !== elements.id
-    );
-    updateTotal(updatedCartList);
-
+  const removeFromCart = (cart) => {
     dispatch({
       type: 'REMOVE_FROM_CART',
       payload: {
-        products: updatedCartList,
+        cart,
       },
     });
   };
-  const updateTotal = (elements) => {
-    let total = 0;
-    elements.forEach((element) => (total = total + element.price));
 
-    dispatch({
-      type: 'UPDATE_TOTAL',
-      payload: {
-        total,
-      },
-    });
-  };
   const value = {
-    total: state.total,
     cartList: state.cartList,
     addToCart,
     removeFromCart,
